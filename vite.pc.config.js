@@ -11,7 +11,7 @@ import { createFile, removeDir } from './floderName.js';
 const basePath = {
   development: './',
   testing: `http://test-yjc-browser.hanhoukeji.cn/yjc-chain-browser/`,
-  production: `./`
+  production: `https://yjcme-chain-cache.hanhoukeji.cn/yjc-chain-browser/`
 }
 
 export default defineConfig(({ command, mode, isSsrBuild, isPreview }) => {
