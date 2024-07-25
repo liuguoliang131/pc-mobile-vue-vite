@@ -195,6 +195,14 @@ const getList = () => {
       finished.value = true;
       showToast("没有更多数据了");
     }
+    if (
+      res.data.total_count === 1000 &&
+      Math.ceil(res.data.total_count / params.value.page_size) ===
+        params.value.page
+    ) {
+      console.log("1000");
+      showToast("最多显示1000条数据,如没有找到数据请使用精准搜索");
+    }
     params.value.page++;
     loading.value = false;
   });

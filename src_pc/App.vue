@@ -27,7 +27,6 @@ const { locale } = reactive({
 * {
   padding: 0;
   margin: 0;
-  overscroll-behavior: none; // 取消ios系统回弹动画效果
 }
 
 ::-webkit-scrollbar {

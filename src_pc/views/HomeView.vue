@@ -43,26 +43,12 @@
         <div class="search" @click="handSearch">搜索</div>
       </div>
       <div class="content">
-        <div class="page_control">
-          <el-pagination
-            v-model:current-page="params.page"
-            v-model:page-size="params.page_size"
-            :default-page-size="params.page_size"
-            :small="true"
-            :disabled="false"
-            :background="true"
-            layout="prev, pager, next, jumper"
-            :total="total_count"
-            @current-change="handleCurrentChange"
-          />
-        </div>
         <el-table
           :data="tableData"
-          style="width: 100%"
+          style="max-width: 100%"
           @sort-change="sortChange"
-          row-class-name="table_row"
         >
-          <el-table-column prop="transaction_hash" label="流转哈希" width="400">
+          <el-table-column prop="transaction_hash" label="流转哈希">
             <template #default="scope">
               <span class="ent nowrap" @click="handGoInfo(scope.row)">{{
                 scope.row.transaction_hash
@@ -73,37 +59,67 @@
             prop="transaction_time"
             label="流转时间"
             sortable="custom"
-            width="400"
           >
             <template #default="scope">
-              {{
-                dayjs(scope.row.chain_time * 1000).format("YYYY-MM-DD HH:mm:ss")
-              }}
+              <div class="nowrap">
+                {{
+                  dayjs(scope.row.chain_time * 1000).format(
+                    "YYYY-MM-DD HH:mm:ss"
+                  )
+                }}
+              </div>
             </template>
           </el-table-column>
-          <el-table-column prop="form_address" label="发送者" width="500" />
-          <el-table-column prop="to_address" label="接收者" width="500" />
+          <el-table-column prop="form_address" label="发送者">
+            <template #default="scope">
+              <div class="nowrap">{{ scope.row.form_address }}</div>
+            </template>
+          </el-table-column>
+          <el-table-column prop="to_address" label="接收者">
+            <template #default="scope">
+              <div class="nowrap">{{ scope.row.to_address }}</div>
+            </template>
+          </el-table-column>
           <el-table-column prop="chain_type" label="流转类型">
             <template #default="scope">
-              <span v-if="scope.row.chain_type === 1">integral</span>
-              <span v-else-if="scope.row.chain_type === 2">contribute</span>
-              <span v-else-if="scope.row.chain_type === 3">nft</span>
+              <div class="nowrap">
+                <span v-if="scope.row.chain_type === 1">integral</span>
+                <span v-else-if="scope.row.chain_type === 2">contribute</span>
+                <span v-else-if="scope.row.chain_type === 3">nft</span>
+              </div>
             </template>
           </el-table-column>
           <el-table-column prop="option_type" label="操作类型">
             <template #default="scope">
-              <span v-if="scope.row.option_type === 1">mint</span>
-              <span v-else-if="scope.row.option_type === 2">transfer</span>
+              <div class="nowrap">
+                <span v-if="scope.row.option_type === 1">mint</span>
+                <span v-else-if="scope.row.option_type === 2">transfer</span>
+              </div>
             </template>
           </el-table-column>
           <el-table-column prop="block_chain_height" label="区域高度">
             <template #default="scope">
-              <span class="ent" @click="handGoInfo(scope.row)">{{
-                scope.row.block_chain_height
-              }}</span>
+              <div class="nowrap">
+                <span class="ent" @click="handGoInfo(scope.row)">{{
+                  scope.row.block_chain_height
+                }}</span>
+              </div>
             </template>
           </el-table-column>
         </el-table>
+      </div>
+      <div class="page_control">
+        <el-pagination
+          v-model:current-page="params.page"
+          v-model:page-size="params.page_size"
+          :default-page-size="params.page_size"
+          :small="true"
+          :disabled="false"
+          :background="true"
+          layout="prev, pager, next, jumper"
+          :total="total_count"
+          @current-change="handleCurrentChange"
+        />
       </div>
     </div>
   </div>
@@ -111,12 +127,11 @@
 
 <script lang="ts" setup>
 import { createApp, ref, reactive, onBeforeMount, onBeforeUnmount } from "vue";
-import { Search, Grid, Histogram } from "@element-plus/icons-vue";
 import { useRouter } from "vue-router";
 import axios from "../../request/index";
 import { browser_overview, browser_transactionList } from "../../request/api";
 import dayjs from "dayjs";
-import { ElMessage } from "element-plus";
+// import { ElMessage } from "element-plus";
 
 interface SearchData {
   page: number;
@@ -194,6 +209,7 @@ const getList = () => {
       Math.ceil(res.data.total_count / params.value.page_size) ===
         params.value.page
     ) {
+      console.log("1000");
       ElMessage({
         type: "warning",
         message: "最多显示1000条数据,如没有找到数据请使用精准搜索",
@@ -408,45 +424,14 @@ onBeforeUnmount(() => {
       }
     }
     .content {
-      margin: 380px 48px 48px 48px;
+      margin: 380px 48px 0 48px;
       background-color: rgba(0, 0, 0, 0.4);
       backdrop-filter: blur(7px);
       border: 1px solid #606060;
       border-radius: 13px;
       padding: 26px 40px;
-      .page_control {
-        display: flex;
-        justify-content: flex-end;
-        :deep(.el-pagination.is-background .btn-next),
-        :deep(.el-pagination.is-background .btn-prev),
-        :deep(.el-pagination.is-background .el-pager li:not(.disabled)) {
-          /* 进行修改未选中背景和字体 */
-          background-color: transparent;
-          font: PingFang HK 16px none;
-          color: #fff;
-          // border: 1px solid #07e7f9;
-        }
-        :deep(
-            .el-pagination.is-background
-              .el-pager
-              li:not(.is-disabled).is-active
-          ) {
-          /* 进行修改选中背景和字体 */
-          background-color: transparent;
-          color: #07e7f9;
-          border: 1px solid #07e7f9;
-        }
-        :deep(.el-input__wrapper) {
-          border: 1px solid #606060;
-          background-color: transparent;
-        }
-        :deep(.el-pagination__jump) {
-          color: #fff;
-        }
-      }
 
       :deep(.el-table) {
-        padding-top: 30px;
         --el-table-border: 1px solid #606060;
         --el-table-text-color: #ffffff;
         --el-table-header-text-color: #ffffff;
@@ -461,10 +446,42 @@ onBeforeUnmount(() => {
         line-height: 22.24px;
         letter-spacing: 0.03em;
       }
+      :deep(.el-table .el-table__cell) {
+        padding: 28px 0;
+      }
 
       .ent {
         color: #06d8ed;
         cursor: pointer;
+      }
+    }
+    .page_control {
+      display: flex;
+      justify-content: flex-end;
+      margin: 24px 48px;
+      :deep(.el-pagination.is-background .btn-next),
+      :deep(.el-pagination.is-background .btn-prev),
+      :deep(.el-pagination.is-background .el-pager li:not(.disabled)) {
+        /* 进行修改未选中背景和字体 */
+        background-color: transparent;
+        font: PingFang HK 16px none;
+        color: #fff;
+        // border: 1px solid #07e7f9;
+      }
+      :deep(
+          .el-pagination.is-background .el-pager li:not(.is-disabled).is-active
+        ) {
+        /* 进行修改选中背景和字体 */
+        background-color: transparent;
+        color: #07e7f9;
+        border: 1px solid #07e7f9;
+      }
+      :deep(.el-input__wrapper) {
+        border: 1px solid #606060;
+        background-color: transparent;
+      }
+      :deep(.el-pagination__jump) {
+        color: #fff;
       }
     }
   }
